@@ -3,35 +3,30 @@ async function loadModels() {
       await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
       await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
   } catch (error) {
-      console.error("Error loading models:", error);
+      console.error("Erro ao carregar os modelos:", error);
   }
 }
 
 async function detectFacesOnImage(image) {
   const canvas = document.getElementById('canvas');
   const context = canvas.getContext('2d');
-  canvas.width = image.width;
-  canvas.height = image.height;
-  context.drawImage(image, 0, 0, image.width, image.height);
+  context.drawImage(image, 0, 0, 400, 400); 
 
   try {
       const detections = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-      console.log(detections);
       
       if (detections && detections.length > 0) {
-          const displaySize = { width: image.width, height: image.height };
-          const resizedDetections = faceapi.resizeResults(detections, displaySize);
-          faceapi.draw.drawDetections(canvas, resizedDetections);
-          faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+          faceapi.draw.drawDetections(canvas, detections);
+          faceapi.draw.drawFaceLandmarks(canvas, detections);
       } else {
-          console.log("No faces detected.");
+          console.log("Nenhuma face detectada.");
       }
   } catch (error) {
-      console.error("Error during face detection:", error);
+      console.error("Erro durante a detecção:", error);
   }
 }
 
-document.getElementById('detectButton').addEventListener('click', function() {
+document.getElementById('imageUpload').addEventListener('change', function() {
   const image = new Image();
   image.src = URL.createObjectURL(document.getElementById('imageUpload').files[0]);
   image.onload = function() {
