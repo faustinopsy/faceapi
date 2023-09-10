@@ -5,13 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detecção de Rostos com faceapi.js</title>
     <script defer src="js/face-api.js"></script>
+    <style>
+        div {
+            position: relative;
+            width: 640px;
+            height: 480px;
+        }
+        
+        #video, #canvas2, #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        #canvas2 {
+            z-index: 2;
+        }
+        
+        #video {
+            z-index: 1;
+        }
+        
+        #overlay {
+            z-index: 3;
+        }
+        
+    </style>
 </head>
 <body>
+    <button id="stopButton">Parar vídeo</button>
+
     <input type="file" id="imageUpload1" accept="image/*">
         <canvas id="canvas1" width="300" height="300"></canvas>
+        
+        <div style="position: relative;">
+            <video id="video" width="640" height="480" autoplay muted></video>
+            <svg id="overlay" width="640" height="480"></svg>
+            <canvas id="canvas2" width="640" height="480"></canvas>
+        </div>
+        
+        
+        
+        
 
-        <input type="file" id="imageUpload2" accept="image/*">
-        <canvas id="canvas2" width="300" height="300"></canvas>
 
 <div id="results"></div>
 
