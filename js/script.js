@@ -54,15 +54,19 @@ async function processVideoFrame() {
   }
 
   const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 });
-  const detection = await faceapi.detectSingleFace(videoElement, options).withFaceLandmarks().withFaceDescriptor();
-  if (detection) {
+  const detections = await faceapi.detectAllFaces(videoElement, options).withFaceLandmarks().withFaceDescriptors();
+
+ 
+if (detections && detections.length > 0) {
+    detections.forEach(detection => {
       const distance = Math.round(faceapi.euclideanDistance(firstDescriptor, detection.descriptor) * 100) / 100;
       const similarityPercentage = Math.max(0, (1 - distance / 0.6) * 100);
       const roundedPercentage = Math.round(similarityPercentage);
       
       let color;
-      if (roundedPercentage > 80) {
+      if (roundedPercentage > 50) {
           color = '#00FF00';
+         
       } else {
           color = '#FF0000';
       }
@@ -79,7 +83,7 @@ async function processVideoFrame() {
       rect.setAttribute('height', detection.detection.box.height);
       rect.setAttribute('fill', 'none');
       rect.setAttribute('stroke', color);
-      rect.setAttribute('stroke-width', (roundedPercentage > 80) ? '4' : '2');
+      rect.setAttribute('stroke-width', (roundedPercentage > 50) ? '4' : '2');
 
       let text = document.getElementById('similarityText');
       if (!text) {
@@ -93,6 +97,41 @@ async function processVideoFrame() {
       text.setAttribute('font-family', 'Arial');
       text.setAttribute('font-size', '18');
       text.setAttribute('fill', color);
+      if (roundedPercentage > 50) {
+        let faceCanvas = document.createElement('canvas');
+        faceCanvas.width = detection.detection.box.width;
+        faceCanvas.height = detection.detection.box.height;
+        
+        let ctx = faceCanvas.getContext('2d');
+        ctx.drawImage(videoElement,
+            detection.detection.box.x, detection.detection.box.y, detection.detection.box.width, detection.detection.box.height,
+            0, 0, detection.detection.box.width, detection.detection.box.height
+        );
+        
+        const box = detection.detection.box;
+        //const faceId = `face_${Math.round(box.x)}_${Math.round(box.y)}`;
+        const faceId = `1`;
+        let faceImg = document.getElementById(faceId);
+        
+        if (!faceImg) {
+            faceImg = new Image();
+            faceImg.id = faceId;
+            document.body.appendChild(faceImg);
+        }
+        
+        faceImg.src = faceCanvas.toDataURL();
+        faceImg.style.position = 'absolute';
+        faceImg.style.top = `${box.y+30}px`;
+        faceImg.style.left = `${box.x+340}px`;
+        faceImg.style.zIndex = '99999';  
+        faceImg.style.border = '2px solid #333';  
+        faceImg.style.boxShadow = '3px 3px 5px rgba(0, 0, 0, 0.3)';
+        
+        
+        alert("Encontrado!!!");
+        //continueProcessing = false;
+    }
+    });
   }
 
   requestAnimationFrame(processVideoFrame);

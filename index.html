@@ -6,6 +6,16 @@
     <title>Detecção de Rostos com faceapi.js</title>
     <script defer src="js/face-api.js"></script>
     <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .video-column, .image-column {
+            flex: 2;
+            margin: 10px;
+        }
+        
         div {
             position: relative;
             width: 640px;
@@ -35,15 +45,20 @@
 <body>
     <button id="stopButton">Parar vídeo</button>
 
-    <input type="file" id="imageUpload1" accept="image/*">
-        <canvas id="canvas1" width="300" height="300"></canvas>
+    
+        <div class="container">
+            <div class="image-column">
+                <input type="file" id="imageUpload1" accept="image/*">
+                <canvas id="canvas1" width="300" height="300"></canvas>
+            </div>
+            <div class="video-column">
+                <video id="video" width="640" height="480" autoplay muted></video>
+                <svg id="overlay" width="640" height="480"></svg>
+                <canvas id="canvas2" width="640" height="480"></canvas>
+            </div>
         
-        <div style="position: relative;">
-            <video id="video" width="640" height="480" autoplay muted></video>
-            <svg id="overlay" width="640" height="480"></svg>
-            <canvas id="canvas2" width="640" height="480"></canvas>
+           
         </div>
-        
         
         
         
