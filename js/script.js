@@ -1,7 +1,7 @@
 let imageProcessed = false;
 let firstDescriptor = null;
 let continueProcessing = true;
-
+let descriptors = [];
 async function loadModels() {
     try {
       await faceapi.nets.tinyFaceDetector.loadFromUri('./models'),
@@ -15,7 +15,6 @@ async function loadModels() {
 
 async function startVideo() {
     const videoElement = document.getElementById('video');
-
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
@@ -54,15 +53,14 @@ async function processVideoFrame() {
   }
 
   const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 });
-  const detections = await faceapi.detectAllFaces(videoElement, options).withFaceLandmarks().withFaceDescriptors();
+  const detectionsVideo = await faceapi.detectAllFaces(videoElement, options).withFaceLandmarks().withFaceDescriptors();
 
- 
-  if (detections && detections.length > 0) {
-    detections.forEach(detection => {
+  if (detectionsVideo && detectionsVideo.length > 0) {
+    detectionsVideo.forEach(detectionvideo => {
       let maxSimilarity = 0;
 
-      descriptors.forEach(descriptor => {
-          const distance = Math.round(faceapi.euclideanDistance(descriptor, detection.descriptor) * 100) / 100;
+      descriptors.forEach(descriptorimg => {
+          const distance = Math.round(faceapi.euclideanDistance(descriptorimg, detectionvideo.descriptor) * 100) / 100;
           const similarityPercentage = Math.max(0, (1 - distance / 0.6) * 100);
           maxSimilarity = Math.max(maxSimilarity, similarityPercentage);
       });
@@ -83,10 +81,10 @@ async function processVideoFrame() {
           rect.id = 'faceRectangle';
           svgElement.appendChild(rect);
       }
-      rect.setAttribute('x', detection.detection.box.x);
-      rect.setAttribute('y', detection.detection.box.y);
-      rect.setAttribute('width', detection.detection.box.width);
-      rect.setAttribute('height', detection.detection.box.height);
+      rect.setAttribute('x', detectionvideo.detection.box.x);
+      rect.setAttribute('y', detectionvideo.detection.box.y);
+      rect.setAttribute('width', detectionvideo.detection.box.width);
+      rect.setAttribute('height', detectionvideo.detection.box.height);
       rect.setAttribute('fill', 'none');
       rect.setAttribute('stroke', color);
       rect.setAttribute('stroke-width', (roundedPercentage > 50) ? '4' : '2');
@@ -98,23 +96,23 @@ async function processVideoFrame() {
           svgElement.appendChild(text);
       }
       text.textContent = `Similaridade: ${roundedPercentage} %`;
-      text.setAttribute('x', detection.detection.box.x);
-      text.setAttribute('y', detection.detection.box.y - 10);
+      text.setAttribute('x', detectionvideo.detection.box.x);
+      text.setAttribute('y', detectionvideo.detection.box.y - 10);
       text.setAttribute('font-family', 'Arial');
       text.setAttribute('font-size', '18');
       text.setAttribute('fill', color);
       if (roundedPercentage > 50) {
         let faceCanvas = document.createElement('canvas');
-        faceCanvas.width = detection.detection.box.width;
-        faceCanvas.height = detection.detection.box.height;
+        faceCanvas.width = detectionvideo.detection.box.width;
+        faceCanvas.height = detectionvideo.detection.box.height;
         
         let ctx = faceCanvas.getContext('2d');
         ctx.drawImage(videoElement,
-            detection.detection.box.x, detection.detection.box.y, detection.detection.box.width, detection.detection.box.height,
-            0, 0, detection.detection.box.width, detection.detection.box.height
+          detectionvideo.detection.box.x, detectionvideo.detection.box.y, detectionvideo.detection.box.width, detection.detection.box.height,
+            0, 0, detectionvideo.detection.box.width, detectionvideo.detection.box.height
         );
         
-        const box = detection.detection.box;
+        const box = detectionvideo.detection.box;
         //const faceId = `face_${Math.round(box.x)}_${Math.round(box.y)}`;
         const faceId = `1`;
         let faceImg = document.getElementById(faceId);
@@ -148,7 +146,7 @@ const checkSimilarityButton = document.getElementById('checkSimilarity');
 document.addEventListener("DOMContentLoaded", function() {
   const checkSimilarityButton = document.getElementById('checkSimilarity');
   
-  if (checkSimilarityButton) { // Para segurança extra, verifique se o elemento não é nulo antes de adicionar um ouvinte de evento
+  if (checkSimilarityButton) { 
       checkSimilarityButton.addEventListener('click', async function() {
           await loadAllDescriptors();
           startVideo();
@@ -181,7 +179,7 @@ async function processFirstImage(image) {
     return false;
 }
 
-let descriptors = [];
+
 
 
 async function loadAllDescriptors() {
@@ -203,6 +201,12 @@ async function loadAllDescriptors() {
                   const detection = await faceapi.detectSingleFace(canvas).withFaceLandmarks().withFaceDescriptor();
                   if (detection) {
                       descriptors.push(detection.descriptor);
+                        imageProcessed = true;
+                        
+                        
+                        processVideoFrame();  
+                      
+                    
                   }
                   res();
               };
