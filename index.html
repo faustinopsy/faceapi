@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TensorFlow.js Treinamento Simples</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <title>Detecção de Rostos com faceapi.js</title>
+    <script defer src="js/face-api.js"></script>
 </head>
 <body>
-    <h2>Predição</h2>
-    <p id="prediction">Calculando...</p>
-    <script src="script.js"></script>
+    <input type="file" id="imageUpload">
+<canvas id="canvas"></canvas>
+<button id="detectButton">Detectar Rostos</button>
+
+
+    <script defer src="js/script.js"></script>
 </body>
 </html>
