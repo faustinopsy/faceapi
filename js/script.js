@@ -57,11 +57,17 @@ async function processVideoFrame() {
   const detections = await faceapi.detectAllFaces(videoElement, options).withFaceLandmarks().withFaceDescriptors();
 
  
-if (detections && detections.length > 0) {
+  if (detections && detections.length > 0) {
     detections.forEach(detection => {
-      const distance = Math.round(faceapi.euclideanDistance(firstDescriptor, detection.descriptor) * 100) / 100;
-      const similarityPercentage = Math.max(0, (1 - distance / 0.6) * 100);
-      const roundedPercentage = Math.round(similarityPercentage);
+      let maxSimilarity = 0;
+
+      descriptors.forEach(descriptor => {
+          const distance = Math.round(faceapi.euclideanDistance(descriptor, detection.descriptor) * 100) / 100;
+          const similarityPercentage = Math.max(0, (1 - distance / 0.6) * 100);
+          maxSimilarity = Math.max(maxSimilarity, similarityPercentage);
+      });
+
+      const roundedPercentage = Math.round(maxSimilarity);
       
       let color;
       if (roundedPercentage > 50) {
@@ -138,6 +144,18 @@ if (detections && detections.length > 0) {
 }
 
 
+const checkSimilarityButton = document.getElementById('checkSimilarity');
+document.addEventListener("DOMContentLoaded", function() {
+  const checkSimilarityButton = document.getElementById('checkSimilarity');
+  
+  if (checkSimilarityButton) { // Para segurança extra, verifique se o elemento não é nulo antes de adicionar um ouvinte de evento
+      checkSimilarityButton.addEventListener('click', async function() {
+          await loadAllDescriptors();
+          startVideo();
+      });
+  }
+});
+
 
 
 let videoStarted = false;
@@ -163,23 +181,56 @@ async function processFirstImage(image) {
     return false;
 }
 
+let descriptors = [];
 
-document.getElementById('imageUpload1').addEventListener('change', async function() {
-    const image1 = new Image();
-    image1.src = URL.createObjectURL(document.getElementById('imageUpload1').files[0]);
-    await new Promise(res => {
-        image1.onload = async function() {
-            if (await processFirstImage(image1)) {
-                startVideo();
-            }
-            res();
-        };
-        image1.onerror = err => {
-            console.error("Erro ao carregar a primeira imagem:", err);
-            res();
-        };
-    });
-});
+
+async function loadAllDescriptors() {
+  const currentCount = parseInt(localStorage.getItem('imgCount') || '0');
+  
+  for (let i = 1; i <= currentCount; i++) {
+      const base64Image = localStorage.getItem(`image_${i}`);
+      if (base64Image) {
+          const image = new Image();
+          image.src = base64Image;
+          await new Promise(res => {
+              image.onload = async function() {
+                  const canvas = document.createElement('canvas');
+                  canvas.width = image.width;
+                  canvas.height = image.height;
+                  const ctx = canvas.getContext('2d');
+                  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                  
+                  const detection = await faceapi.detectSingleFace(canvas).withFaceLandmarks().withFaceDescriptor();
+                  if (detection) {
+                      descriptors.push(detection.descriptor);
+                  }
+                  res();
+              };
+              image.onerror = err => {
+                  console.error("Erro ao carregar imagem do localStorage:", err);
+                  res();
+              };
+          });
+      }
+  }
+}
+
+// document.getElementById('imageUpload1').addEventListener('change', async function() {
+//     const image1 = new Image();
+//     image1.src = URL.createObjectURL(document.getElementById('imageUpload1').files[0]);
+//     await new Promise(res => {
+//         image1.onload = async function() {
+//             if (await processFirstImage(image1)) {
+//                 startVideo();
+//             }
+//             res();
+//         };
+//         image1.onerror = err => {
+//             console.error("Erro ao carregar a primeira imagem:", err);
+//             res();
+//         };
+//     });
+// });
 
 document.getElementById('stopButton').addEventListener('click', stopVideo);
 
