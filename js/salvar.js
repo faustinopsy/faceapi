@@ -1,6 +1,15 @@
 const imageInput = document.getElementById('imageUpload1');
 const imgCountSpan = document.getElementById('imgCount');
 let conta= parseInt(localStorage.getItem('imgCount'));
+let im0=document.getElementById('imagens');
+for(i=1;i<=conta;i++){
+   let base64Image= localStorage.getItem(`image_${i}`);
+    const img=document.createElement('img');
+    img.id="ix_"+i
+    img.src=base64Image
+    img.style.width="130px";
+    im0.appendChild(img);
+}
 
 imageInput.addEventListener('change', async function() {
     const file = this.files[0];
