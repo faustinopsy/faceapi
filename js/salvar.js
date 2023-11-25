@@ -1,6 +1,7 @@
 const imageInput = document.getElementById('imageUpload1');
 const imgCountSpan = document.getElementById('imgCount');
-
+let conta= parseInt(localStorage.getItem('imgCount'));
+imgCountSpan.innerText = conta!=NAN?conta:0;
 imageInput.addEventListener('change', async function() {
     const file = this.files[0];
     if (file) {
