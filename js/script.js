@@ -58,7 +58,7 @@ async function processVideoFrame() {
   if (detectionsVideo && detectionsVideo.length > 0) {
     detectionsVideo.forEach(detectionvideo => {
       let maxSimilarity = 0;
-
+    console.log(detectionvideo)
       descriptors.forEach(descriptorimg => {
           const distance = Math.round(faceapi.euclideanDistance(descriptorimg, detectionvideo.descriptor) * 100) / 100;
           const similarityPercentage = Math.max(0, (1 - distance / 0.6) * 100);
@@ -185,7 +185,7 @@ async function processFirstImage(image) {
 async function loadAllDescriptors() {
   const currentCount = parseInt(localStorage.getItem('imgCount') || '0');
   
-  for (let i = 1; i <= currentCount; i++) {
+  for (let i = 1; i <= currentCount; i++) {         
       const base64Image = localStorage.getItem(`image_${i}`);
       if (base64Image) {
           const image = new Image();
@@ -193,11 +193,12 @@ async function loadAllDescriptors() {
           await new Promise(res => {
               image.onload = async function() {
                   const canvas = document.createElement('canvas');
+                 
                   canvas.width = image.width;
                   canvas.height = image.height;
                   const ctx = canvas.getContext('2d');
                   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-                  
+                 
                   const detection = await faceapi.detectSingleFace(canvas).withFaceLandmarks().withFaceDescriptor();
                   if (detection) {
                       descriptors.push(detection.descriptor);
