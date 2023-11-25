@@ -108,7 +108,7 @@ async function processVideoFrame() {
         
         let ctx = faceCanvas.getContext('2d');
         ctx.drawImage(videoElement,
-          detectionvideo.detection.box.x, detectionvideo.detection.box.y, detectionvideo.detection.box.width, detection.detection.box.height,
+          detectionvideo.detection.box.x, detectionvideo.detection.box.y, detectionvideo.detection.box.width, detectionvideo.detection.box.height,
             0, 0, detectionvideo.detection.box.width, detectionvideo.detection.box.height
         );
         
