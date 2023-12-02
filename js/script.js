@@ -56,9 +56,11 @@ async function processVideoFrame() {
   const detectionsVideo = await faceapi.detectAllFaces(videoElement, options).withFaceLandmarks().withFaceDescriptors();
 
   if (detectionsVideo && detectionsVideo.length > 0) {
+    //1º loop
     detectionsVideo.forEach(detectionvideo => {
       let maxSimilarity = 0;
     console.log(detectionvideo)
+    //2º loop
       descriptors.forEach(descriptorimg => {
           const distance = Math.round(faceapi.euclideanDistance(descriptorimg, detectionvideo.descriptor) * 100) / 100;
           const similarityPercentage = Math.max(0, (1 - distance / 0.6) * 100);
@@ -87,6 +89,14 @@ async function processVideoFrame() {
       rect.setAttribute('height', detectionvideo.detection.box.height);
       rect.setAttribute('fill', 'none');
       rect.setAttribute('stroke', color);
+      //operador ternario
+      /*
+      if(roundedPercentage > 50){
+        return 4
+      }else{
+        return 2
+      }
+      */
       rect.setAttribute('stroke-width', (roundedPercentage > 50) ? '4' : '2');
 
       let text = document.getElementById('similarityText');
