@@ -158,7 +158,9 @@ document.addEventListener("DOMContentLoaded", function() {
   
   if (checkSimilarityButton) { 
       checkSimilarityButton.addEventListener('click', async function() {
+
           await loadAllDescriptors();
+          
           startVideo();
       });
   }
