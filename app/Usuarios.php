@@ -25,5 +25,12 @@ switch($_SERVER["REQUEST_METHOD"]){
             $resultado = $users->buscar();
             echo json_encode(["usuarios"=>$resultado]);
     break;
+    case "DELETE";
+        $id=isset($_GET['id'])?$_GET['id']:'';
+        $usuario->setId($id);
+        $users = new UsuarioController($usuario,$conexao);
+        $resultado = $users->excluir();
+        echo json_encode([$resultado]);
+    break;
     
 }

@@ -10,11 +10,19 @@ function carregarImagens() {
     .then(data => {
         im0.innerHTML = ''; 
         data.usuarios.forEach((usuario, index) => {
+            const imgWrapper = document.createElement('span');
             const img = document.createElement('img');
+            const deleteButton = document.createElement('button');
             img.id = "ix_" + (index + 1);
             img.src = usuario.rosto; 
             img.style.width = "130px";
-            im0.appendChild(img);
+
+            deleteButton.innerText = 'Deletar';
+            deleteButton.onclick = function() { deletarImagem(usuario.id); };
+
+            imgWrapper.appendChild(img);
+            imgWrapper.appendChild(deleteButton);
+            im0.appendChild(imgWrapper);
         });
         imgCountSpan.innerText = `${data.usuarios.length} Imagens carregadas`;
     })
@@ -52,6 +60,20 @@ imageInput.addEventListener('change', async function() {
           });
     }
 });
+
+function deletarImagem(id) {
+    console.log("Deletando imagem com ID:", id);
+    fetch(`app/Usuarios.php?id=${id}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            carregarImagens(); 
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
 
 function toBase64(file) {
     return new Promise((resolve, reject) => {

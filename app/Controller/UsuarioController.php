@@ -29,5 +29,16 @@ class UsuarioController{
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+    public function excluir(){
+        try {
+        $stmt = $this->conecta->prepare("DELETE FROM usuarios where id=:id");
+        $id = $this->usuario->getId();
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+            return ['status' => true];
+        } catch (\PDOException $e) {
+            return ['status' => false, 'error' => $e->getMessage()];
+        }
+    }
     
 }

@@ -251,6 +251,5 @@ async function loadAllDescriptors() {
 //     });
 // });
 
-document.getElementById('stopButton').addEventListener('click', stopVideo);
 
 loadModels();
