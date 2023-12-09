@@ -8,6 +8,7 @@
     <style>
         .container {
             display: flex;
+            width: 100%;
             justify-content: space-between;
         }
         
@@ -15,7 +16,10 @@
             flex: 2;
             margin: 10px;
         }
-        
+        .image2-column{
+            right: 281px;
+            margin-top: 60%;
+        }
         div {
             position: relative;
             width: 640px;
@@ -39,18 +43,82 @@
         #overlay {
             z-index: 3;
         }
-        
+       
+    .loading-overlay {
+        position: fixed; 
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); 
+        display: flex;
+        justify-content: center;
+        align-items: center; 
+        z-index: 1000; 
+    }
+
+    .spinner {
+        border: 4px solid #f3f3f3; 
+        border-top: 4px solid #3498db; 
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .button-shadow {
+        background-color: #4CAF50; 
+        color: white; 
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        box-shadow: 0 4px #999;
+        transition: all 0.3s ease;
+    }
+    
+    .button-shadow:hover {
+        background-color: #45a049;
+    }
+    
+    .button-shadow:active {
+        background-color: #45a049;
+        box-shadow: 0 2px #666;
+        transform: translateY(2px);
+    }
+    .button-border {
+        background-color: white;
+        color: black;
+        padding: 10px 20px;
+        border: 2px solid #4CAF50; 
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .button-border:hover {
+        background-color: #4CAF50;
+        color: white;
+    }
+    
     </style>
 </head>
 <body>
-    <button id="stopButton">Parar vídeo</button>
-
+    <div id="loading" class="loading-overlay" style="display:none;">
+        <div class="spinner"></div>
+    </div>
     
         <div class="container">
             <div class="image-column">
-                <input type="file" id="imageUpload1" accept="image/*">
+                <input type="file" id="imageUpload1" class="button-border" accept="image/*">
                 <p><span id="imgCount">0 Imagens carregadas</span></p>
-                <button id="checkSimilarity">Verificar similaridade</button>
+                <button id="checkSimilarity" class="button-shadow">Verificar similaridade</button>
                 <canvas id="canvas1" width="300" height="300"></canvas>
             </div>
             <div class="video-column">
@@ -58,16 +126,13 @@
                 <svg id="overlay" width="640" height="480"></svg>
                 <canvas id="canvas2" width="640" height="480"></canvas>
             </div>
-            <div id="imagens"></div>
+            <div id="imagens" class="image2-column"></div>
            
         </div>
         
+       
         
-        
-
-
 <div id="results"></div>
-
 
     <script defer src="js/script.js"></script>
     <script defer src="js/salvarbackend.js"></script>

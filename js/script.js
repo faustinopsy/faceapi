@@ -158,9 +158,11 @@ document.addEventListener("DOMContentLoaded", function() {
   
   if (checkSimilarityButton) { 
       checkSimilarityButton.addEventListener('click', async function() {
+        document.getElementById('loading').style.display = 'flex';
 
-          await loadAllDescriptors();
-          
+        await loadAllDescriptors();
+        
+        document.getElementById('loading').style.display = 'none';
           startVideo();
       });
   }
